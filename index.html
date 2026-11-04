@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Math Module 3 Review and Test: Times as Many</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Andika:wght@400;700&family=Lexend:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css?v=m3c" />
+</head>
+<body>
+<canvas id="confetti-canvas"></canvas>
+
+<!-- ══════════════════════════════════════════
+     START SCREEN
+══════════════════════════════════════════ -->
+<div class="container">
+  <h1>🧮 Math Module 3 Review and Test</h1>
+  <p class="welcome-sub">Times as Many: Compare with Multiplication</p>
+
+  <div id="start-screen">
+
+    <!-- WELCOME PANEL (Marcos 11/4: "these words seem too blah" · "It needs to look better visually" · "the middle should
+         not distract from the title" · "more decorative"): the title leads; a small times-as-many picture (3 × 12 — a pair on
+         no question, no slide and no real test item), one idea, and the five steps in their part colors. Not read aloud. -->
+    <div id="welcome-panel" class="wp">
+      <div class="wp-hero">
+        <!-- a small picture, not a problem to do (Marcos 11/4: "It should be more decorative") -->
+        <div class="wp-art" aria-hidden="true">
+          <div class="wp-art-row"><span class="wp-art-who">Ana</span><span class="wp-art-box wp-a">12</span></div>
+          <div class="wp-art-row"><span class="wp-art-who">Ben</span><span class="wp-art-boxes"><span class="wp-art-box wp-b">12</span><span class="wp-art-box wp-b">12</span><span class="wp-art-box wp-b">12</span><span class="wp-art-brk">?</span></span></div>
+        </div>
+        <div class="wp-words">
+          <p class="wp-big">Times as many? Multiply.</p>
+          <p class="wp-line">Use the bar model to find the <b>bigger amount</b>, the <b>smaller amount</b>, and <b>how many times</b>.</p>
+        </div>
+      </div>
+      <ol class="wp-path" aria-label="Your five steps">
+        <li class="wp-step wp-s1"><span class="wp-n">1</span><span aria-hidden="true">🔥</span> Warm-Up</li>
+        <li class="wp-step wp-s2"><span class="wp-n">2</span><span aria-hidden="true">🌱</span> Practice A</li>
+        <li class="wp-step wp-s3"><span class="wp-n">3</span><span aria-hidden="true">🧭</span> Practice B</li>
+        <li class="wp-step wp-s4"><span class="wp-n">4</span><span aria-hidden="true">📘</span> Review</li>
+        <li class="wp-step wp-s5"><span class="wp-n">5</span><span aria-hidden="true">📝</span> Test</li>
+      </ol>
+      <button class="lgs-btn" onclick="app.showReadAloudIntro()">🚀 Let's Get Started!</button>
+      <div style="text-align:right;margin-top:10px;">
+        <span onclick="app.promptTeacherReview()" style="font-size:12px;color:#767676;cursor:pointer;user-select:none;">Teacher Access</span>
+      </div>
+    </div>
+
+    <!-- 👀 TRY IT AS A STUDENT (Teacher screen): a ?share=…&teach=<PART>.<version> link starts here — one tap starts
+         the part (the tap also lets the device speak) -->
+    <div id="teach-ready" class="teach-ready hidden">
+      <p class="teach-ready-h">🧑‍🏫 Try it as a student</p>
+      <p class="teach-ready-what" id="teach-what"></p>
+      <p class="teach-ready-note">You answer, the way a student does. ⏩ Skip the wait opens anything that is shut. Nothing is saved.</p>
+      <button type="button" class="start-btn" id="teach-start-btn" onclick="app.teachStart()">▶ Start</button>
+    </div>
+
+    <!-- STUDENT LOGIN (hidden until after directions) -->
+    <div id="student-login-panel" class="hidden">
+
+      <!-- RESUME CARD -->
+      <div id="resume-container" class="hidden">
+        <div style="background:#fff8f0;border:3px solid #e67e22;border-radius:16px;padding:24px 20px;text-align:center;margin-bottom:16px;">
+          <div style="font-size:2.5rem;margin-bottom:8px;">↩️</div>
+          <p style="margin:0 0 6px;font-weight:800;color:#a04000;font-size:1.1rem;">Welcome back!</p>
+          <p style="margin:0 0 16px;color:#555;font-size:0.9rem;">You have an unfinished session:</p>
+          <div id="resume-detail" style="font-size:1.4rem;font-weight:800;color:#e67e22;margin-bottom:20px;"></div>
+          <button class="resume-btn" onclick="app.resumeSession()" style="width:100%;font-size:1rem;padding:14px;">↩️ Resume Where I Left Off</button>
+          <div style="margin-top:14px;">
+            <button onclick="app.discardProgress()"
+              style="background:none;border:none;color:#c0392b;font-size:0.82rem;cursor:pointer;
+                     font-family:inherit;text-decoration:underline;padding:4px;">
+              🗑️ Discard &amp; start over (Teacher PIN required)
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- SIGN IN (not numbered — the activities are Steps 1, 2, 3 …; Marcos 10/8) -->
+      <div class="step-card" id="login-step-card">
+        <span class="step-label">Sign In</span>
+        <div class="login-box">
+          <label for="name-select">👤 Select your name:</label>
+          <select id="name-select" onchange="app.onNameSelect()">
+            <option value="">-- Choose your name --</option>
+          </select>
+
+          <div id="pin-section" class="hidden">
+            <label for="student-pin" id="pin-label">🔒 Enter your student number:</label>
+            <input type="password" id="student-pin" placeholder="Student number…"
+                   onkeydown="if(event.key==='Enter') app.attemptLogin()" autocomplete="new-password" />
+            <div id="guest-name-section" class="hidden">
+              <label for="guest-display-name">✏️ Enter your first name:</label>
+              <input type="text" id="guest-display-name" placeholder="e.g. Henry" maxlength="20"
+                     onkeydown="if(event.key==='Enter') app.attemptLogin()" />
+            </div>
+            <button class="sign-in-btn" onclick="app.attemptLogin()">✅ Sign In</button>
+          </div>
+
+          <div class="login-error" id="login-error"></div>
+        </div>
+      </div>
+
+      <!-- STEP 1 — WARM-UP (form W) · STEP 2 — PRACTICE A (form P) · STEP 3 — PRACTICE B (form A) · STEP 4 — REVIEW (form B) · STEP 5 — THE TEST (form T; Teacher-PIN retake = form U) -->
+      <div id="form-select-section" class="hidden">
+
+        <!-- Warm-Up (Marcos 10/15) — watch a worked example (must hear it), then step by step, then 12 easier questions -->
+        <div class="step-card" id="warm-up-card">
+          <span class="step-label">Step 1 — Warm-Up</span>
+          <div class="start-grid">
+            <button class="start-btn warm-up-btn" id="btn-form-W" onclick="app.attemptStart('W')">🔥 Warm-Up<span class="form-btn-sub">watch, then try · 12 questions · 💡 hints</span></button>
+          </div>
+          <p class="form-note">Start here. Watch and listen. Then try it one step at a time. Get <strong>9 of 12</strong> right to open Practice A.</p>
+        </div>
+
+        <!-- Practice A — in order, a bar model on every question, a hint on every question (read aloud by itself); as many tries as they like -->
+        <div class="step-card" id="practice-a-card">
+          <span class="step-label">Step 2 — Practice A</span>
+          <div class="start-grid">
+            <button class="start-btn practice-a-btn" id="btn-form-P" onclick="app.attemptStart('P')">🌱 Practice A<span class="form-btn-sub">17 questions · 💡 hints read to you</span></button>
+          </div>
+          <p class="form-note">Every question has a <strong>bar model</strong>. Every hint is read to you. Get <strong>12 of 17</strong> right to open Practice B.</p>
+        </div>
+
+        <!-- Practice B — test-level questions with hints and word help; two times, then Teacher PIN -->
+        <div class="step-card" id="practice-b-card">
+          <span class="step-label">Step 3 — Practice B</span>
+          <div class="start-grid">
+            <button class="start-btn practice-b-btn" id="btn-form-A" onclick="app.attemptStart('A')">🧭 Practice B<span class="form-btn-sub">17 questions · 💡 hints</span></button>
+          </div>
+          <p class="form-note">The same kinds of questions as the test. 💡 Hints and word help. Get <strong>12 of 17</strong> right to open the Review.</p>
+        </div>
+
+        <!-- Review — no hints, no word help; two times, then Teacher PIN -->
+        <div class="step-card" id="review-card">
+          <span class="step-label">Step 4 — Review</span>
+          <div class="start-grid">
+            <button class="start-btn review-btn" id="btn-form-B" onclick="app.attemptStart('B')">📘 Review<span class="form-btn-sub">17 questions · no hints · 2 tries</span></button>
+          </div>
+          <p class="form-note">No hints this time. Get <strong>12 of 17</strong> right to open the Test.</p>
+        </div>
+
+        <!-- Not taken yet → start the test -->
+        <div class="step-card" id="quiz-start-card">
+          <span class="step-label">Step 5 — The Test</span>
+          <div class="start-grid">
+            <button class="start-btn" id="btn-form-T" onclick="app.attemptStart('T')">📝 Take the Test<span class="form-btn-sub">17 questions · one try</span></button>
+          </div>
+        </div>
+
+        <!-- Already taken → locked; retake needs Teacher PIN -->
+        <div id="completed-container" class="hidden">
+          <div style="background:#fdecea;border:3px solid #e74c3c;border-radius:16px;padding:22px 20px;text-align:center;margin-bottom:16px;">
+            <div style="font-size:2.5rem;margin-bottom:8px;">✅</div>
+            <p style="margin:0 0 6px;font-weight:800;color:#a00000;font-size:1.1rem;">Test Already Completed</p>
+            <p id="completed-detail" style="margin:0 0 14px;color:#555;font-size:0.9rem;">You have already taken the test.</p>
+            <button onclick="app.requestRetake()" style="background:none;border:none;color:#c0392b;font-size:0.85rem;cursor:pointer;font-family:inherit;text-decoration:underline;padding:4px;">🔑 Request Retake (Teacher PIN required)</button>
+          </div>
+        </div>
+
+        <!-- Retake (shown after Teacher PIN) -->
+        <div class="step-card hidden" id="retake-card">
+          <span class="step-label">Retake — Unlocked by Your Teacher</span>
+          <div class="start-grid">
+            <button class="start-btn" id="btn-retake" onclick="app.startRetake()">🔁 Retake the Test<span class="form-btn-sub">17 questions · new numbers</span></button>
+          </div>
+        </div>
+
+        <div style="background:#f0f4ff;border:2px solid #a9c4f5;border-radius:12px;
+                     padding:12px 16px;margin-bottom:12px;font-size:0.88rem;color:#2c3e50;line-height:1.6;">
+          📋 <strong>Rules:</strong> Do the Warm-Up, Practice A and Practice B as many times as you like.
+          Get <strong>9 of 12</strong> on the Warm-Up. Then Practice A opens.
+          Get <strong>12 of 17</strong> on Practice A. Then Practice B opens.
+          Get <strong>12 of 17</strong> on Practice B. Then the Review opens.
+          You can take the Review <strong>two times</strong>. Get <strong>12 of 17</strong> on the Review. Then the Test opens.
+          You take the <strong>Test one time</strong>. After you finish, it locks.
+          Only your teacher can unlock a retake.
+        </div>
+      </div>
+
+    </div>
+  </div><!-- /#start-screen -->
+
+  <!-- ══════════════════════════════════════════
+       READ ALOUD INTRO SCREEN
+  ══════════════════════════════════════════ -->
+  <div id="readaloud-screen" class="hidden">
+    <div style="text-align:center;margin-bottom:20px;">
+      <div style="font-size:3.5rem;margin-bottom:10px;">🔊</div>
+      <h2 class="ra-read" style="color:var(--primary);margin:0 0 8px;">Read Aloud is Available!</h2>
+      <p class="ra-read" style="color:#555;font-size:0.95rem;line-height:1.6;max-width:420px;margin:0 auto;">
+        Every question and every answer choice has its own speaker button.<br>
+        You can use it as much as you need!
+      </p>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:14px;max-width:420px;margin:0 auto 24px;">
+      <div style="background:#eaf4ff;border:2px solid #b3d4f5;border-radius:14px;padding:16px 18px;display:flex;align-items:center;gap:16px;">
+        <span style="font-size:2rem;">1️⃣</span>
+        <div class="ra-read"><strong>Tap 🔊 once</strong> — the question or choice is read aloud</div>
+      </div>
+      <div style="background:#fff3e0;border:2px solid #ffd08a;border-radius:14px;padding:16px 18px;display:flex;align-items:center;gap:16px;">
+        <span style="font-size:2rem;">2️⃣</span>
+        <div class="ra-read"><strong>Tap ⏹ to stop</strong> — reading stops immediately</div>
+      </div>
+      <div style="background:#e8f5e9;border:2px solid #a5d6a7;border-radius:14px;padding:16px 18px;display:flex;align-items:center;gap:16px;">
+        <span style="font-size:2rem;">3️⃣</span>
+        <div class="ra-read"><strong>Tap 🔊 again</strong> — it replays from the beginning</div>
+      </div>
+    </div>
+
+    <div style="background:#f3e8ff;border:2px solid #9b59b6;border-radius:10px;padding:8px 16px;
+                margin-bottom:14px;display:flex;align-items:center;gap:12px;
+                font-size:0.93rem;font-weight:bold;color:#6c3483;">
+      <span>📢 Please read this carefully — button unlocks in</span>
+      <div style="flex:1;height:8px;background:#e8d5f5;border-radius:4px;overflow:hidden;">
+        <div id="readaloud-fill" style="height:100%;background:#9b59b6;width:100%;border-radius:4px;transition:width 1s linear;"></div>
+      </div>
+      <span id="readaloud-count" style="min-width:28px;text-align:right;font-size:1rem;">6</span><span>s</span>
+    </div>
+    <button id="readaloud-btn" class="ready-btn" onclick="app.showDirections()" disabled style="opacity:0.45;cursor:not-allowed;">⏳ Please wait…</button>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       DIRECTIONS SCREEN
+  ══════════════════════════════════════════ -->
+  <div id="directions-screen" class="hidden">
+    <h2 style="text-align:center;color:var(--primary);margin-top:0;margin-bottom:20px;">📋 How It Works</h2>
+
+    <div class="dir-section login-dir">
+      <div class="dir-row">
+        <button class="speak-btn" onclick="speakDir(this)">🔊</button>
+        <h3 style="margin:0;">👤 Sign In</h3>
+      </div>
+      <p class="dir-text">Choose your name from the list, then enter your student number and tap Sign In. Guest students will also enter their first name.</p>
+    </div>
+
+    <div class="dir-section paper-dir">
+      <div class="dir-row">
+        <button class="speak-btn" onclick="speakDir(this)">🔊</button>
+        <h3 style="margin:0;">✏️ Get Paper and a Pencil</h3>
+      </div>
+      <p class="dir-text">You will multiply and divide to compare. Do the work on paper. Draw a bar model if it helps. Then pick your answer.</p>
+    </div>
+
+    <div class="dir-section warm-up-dir">
+      <div class="dir-row">
+        <button class="speak-btn" onclick="speakDir(this)">🔊</button>
+        <h3 style="margin:0;">🔥 Step 1 — Warm-Up</h3>
+      </div>
+      <p class="dir-text">Start with the Warm-Up. First you watch and listen. Tap Listen and hear it to the end. Then you try a problem one step at a time. The steps do not count. Then you do 12 questions on your own. Every question has a hint, and the hint is read to you. You can do it as many times as you like. Get 9 of 12 right to open Practice A.</p>
+    </div>
+
+    <div class="dir-section practice-a-dir">
+      <div class="dir-row">
+        <button class="speak-btn" onclick="speakDir(this)">🔊</button>
+        <h3 style="margin:0;">🌱 Step 2 — Practice A</h3>
+      </div>
+      <p class="dir-text">Get 9 of 12 right on the Warm-Up first. Then Practice A opens. It has 17 questions. Every question has a bar model picture. Every question has a hint, and the hint is read to you. After each answer you will see the right answer and why. You can do it as many times as you like. Get 12 of 17 right to open Practice B.</p>
+    </div>
+
+    <div class="dir-section practice-b-dir">
+      <div class="dir-row">
+        <button class="speak-btn" onclick="speakDir(this)">🔊</button>
+        <h3 style="margin:0;">🧭 Step 3 — Practice B</h3>
+      </div>
+      <p class="dir-text">Get 12 of 17 right on Practice A first. Then Practice B opens. Practice B has 17 questions. They are like the test questions. Every question has a hint. The hint is not read to you here. If you get stuck, tap the Need a hint button. Tap the speaker by the hint to hear it. After each answer you will see the right answer and the work. If you miss a question, you will see what went wrong. Then you get to try one like it. That extra question does not change your score. You can do Practice B as many times as you like. Get 12 of 17 right to open the Review.</p>
+    </div>
+
+    <div class="dir-section words-dir">
+      <div class="dir-row">
+        <button class="speak-btn" onclick="speakDir(this)">🔊</button>
+        <h3 style="margin:0;">📖 Word Help</h3>
+      </div>
+      <p class="dir-text">Some questions have word buttons under them. Tap a word to see what it means. You will see an example too. Tap the speaker to hear it. Word help is in the Warm-Up, Practice A and Practice B. It is not in the Review. It is not on the Test.</p>
+    </div>
+
+    <div class="dir-section listen-dir">
+      <div class="dir-row">
+        <button class="speak-btn" onclick="speakDir(this)">🔊</button>
+        <h3 style="margin:0;">👂 If You Miss One</h3>
+      </div>
+      <p class="dir-text">If you miss a question, you will see what went wrong. Tap the Listen button. Hear it to the end. Then the Next button shows. This is in the Warm-Up, Practice A, Practice B, and the Review.</p>
+    </div>
+
+    <div class="dir-section form-dir">
+      <div class="dir-row">
+        <button class="speak-btn" onclick="speakDir(this)">🔊</button>
+        <h3 style="margin:0;">📘 Step 4 — Review</h3>
+      </div>
+      <p class="dir-text">Get 12 of 17 right on Practice B first. Then the Review opens. The Review has 17 questions. There are no hints and no word help. After each answer you will see the right answer and the work. If you miss a question, you will see what went wrong. Then you get to try one like it. You can take the Review two times. Get 12 of 17 right to open the Test.</p>
+    </div>
+
+    <div class="dir-section attempts-dir">
+      <div class="dir-row">
+        <button class="speak-btn" onclick="speakDir(this)">🔊</button>
+        <h3 style="margin:0;">🔒 Step 5 — The Test</h3>
+      </div>
+      <p class="dir-text">Get 12 of 17 right on the Review first. Then the Test opens. It has 17 questions. There are no hints and no word help. After each answer you will see if it is correct or not quite, but the right answer is not shown. You take the test one time. When you finish, it locks. Only your teacher can unlock a retake, so do your best work the first time.</p>
+    </div>
+
+    <div class="dir-section read-dir">
+      <div class="dir-row">
+        <button class="speak-btn" onclick="speakDir(this)">🔊</button>
+        <h3 style="margin:0;">📖 Reading Timer</h3>
+      </div>
+      <p class="dir-text">When each question appears, the answer choices are locked for 12 seconds. Use that time to read the question and choices carefully before making your selection. A Warm-Up step locks for 3 seconds.</p>
+      <span class="timer-chip chip-amber">⏱️ 12 second read lock</span>
+    </div>
+
+    <div class="dir-section soak-dir">
+      <div class="dir-row">
+        <button class="speak-btn" onclick="speakDir(this)">🔊</button>
+        <h3 style="margin:0;">⏳ Thinking Timer</h3>
+      </div>
+      <p class="dir-text">After you confirm your answer, wait 8 seconds before moving on. This gives your brain time to process the feedback — right or wrong!</p>
+      <span class="timer-chip chip-teal">⏳ 8 second pause</span>
+    </div>
+
+    <div class="dir-section timer-dir">
+      <div class="dir-row">
+        <button class="speak-btn" onclick="speakDir(this)">🔊</button>
+        <h3 style="margin:0;">⏱ Overall Timer</h3>
+      </div>
+      <p class="dir-text">A timer runs the whole time. It is not a countdown — there is no time limit. It only tracks how long you take so your teacher can see your progress.</p>
+      <span class="timer-chip chip-green">📊 No pressure — no time limit!</span>
+    </div>
+
+    <!-- 15s instruction lock bar -->
+    <div style="background:#f3e8ff;border:2px solid #9b59b6;border-radius:10px;padding:8px 16px;
+                margin-bottom:14px;display:flex;align-items:center;gap:12px;
+                font-size:0.93rem;font-weight:bold;color:#6c3483;">
+      <span>📜 Read all directions — button unlocks in</span>
+      <div style="flex:1;height:8px;background:#e8d5f5;border-radius:4px;overflow:hidden;">
+        <div id="instruct-fill" style="height:100%;background:#9b59b6;width:100%;border-radius:4px;transition:width 0.25s linear;"></div>
+      </div>
+      <span id="instruct-count" style="min-width:28px;text-align:right;font-size:1rem;">15</span><span>s</span>
+    </div>
+    <button id="ready-btn" class="ready-btn" onclick="app.showLogin()">⏳ Read the directions above first…</button>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       QUIZ SCREEN
+  ══════════════════════════════════════════ -->
+  <div id="quiz-screen" class="hidden">
+    <div id="tab-warning-banner" class="hidden" style="background:#fde8f0;border:2px solid #f48fb1;border-radius:10px;padding:8px 16px;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;font-size:0.88rem;font-weight:bold;color:#ad1457;">
+      <span>⚠️ Please stay on this page while you work.</span>
+      <button onclick="document.getElementById('tab-warning-banner').classList.add('hidden')" style="background:none;border:none;cursor:pointer;color:#ad1457;font-size:1rem;padding:2px 6px;font-family:inherit;">✕</button>
+    </div>
+    <div id="review-mode-banner" class="hidden" style="background:#fff3cd;border:2px solid #ffc107;border-radius:10px;padding:7px 14px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;font-size:0.82rem;font-weight:bold;color:#856404;">
+      <span>🔍 Teacher Review Mode — auto-run</span>
+      <button onclick="app.exitReviewMode()" style="background:none;border:1px solid #ffc107;border-radius:6px;padding:3px 10px;cursor:pointer;font-family:inherit;font-weight:bold;color:#856404;font-size:0.78rem;">✕ Exit</button>
+    </div>
+    <!-- Which part this is, big enough to read from across the room (Marcos 10/8) -->
+    <div id="part-banner" class="part-banner" role="status"></div>
+    <!-- "Try one like it" — shown only on the extra question that follows a miss in a review -->
+    <div id="twin-note" class="twin-note hidden" role="status">🔁 <strong>Try one like it.</strong> This one does not change your score.</div>
+    <div class="q-badge">
+      <span class="q-badge-pill" id="progress-text">Question 1 of 17</span>
+      <span class="score-badge" id="score-text">Score: 0</span>
+    </div>
+
+    <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+    <div class="streak-bar" id="streak-bar"></div>
+
+    <div class="timer-row">
+      <div class="timer-display" id="timer-display">00:00</div>
+    </div>
+
+    <!-- Reading lock bar (12s) -->
+    <div class="reading-timer-bar hidden" id="reading-timer-bar">
+      <span>📖 Read carefully — answers unlock in</span>
+      <div class="reading-timer-fill-wrap"><div class="reading-timer-fill" id="reading-fill"></div></div>
+      <span class="reading-timer-count" id="reading-count">12</span><span>s</span>
+    </div>
+
+    <div class="question-header">
+      <button class="speak-btn" id="speak-q-btn" onclick="app.speakQuestion()" title="Read question aloud">🔊</button>
+      <h2 id="question-text"></h2>
+    </div>
+    <div id="q-words"></div>
+    <div id="q-visual"></div>
+
+    <div class="options-grid" id="answers" role="radiogroup" aria-label="Answer choices"></div>
+
+    <!-- 8s next soak bar -->
+    <div class="next-timer-bar hidden" id="next-timer-bar">
+      <span>⏳ Next in</span>
+      <div class="next-timer-fill-wrap"><div class="next-timer-fill" id="next-fill"></div></div>
+      <span class="reading-timer-count" id="next-count">8</span><span>s</span>
+    </div>
+
+    <div id="feedback" class="feedback-box"></div>
+
+    <div class="controls">
+      <button id="confirm-btn" class="action-btn hidden" onclick="app.confirmAnswer()">✅ That's My Answer!</button>
+      <button id="next-btn"    class="action-btn hidden" onclick="app.nextQuestion()">Next ➡️</button>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       END SCREEN
+  ══════════════════════════════════════════ -->
+  <div id="end-screen" class="hidden">
+    <h2 id="end-title" style="text-align:center;">🎉 All Done!</h2>
+    <p id="final-score-sub" style="text-align:center;color:#666;margin-bottom:0;"></p>
+    <span id="final-percent"></span>
+    <p id="final-msg" style="font-size:1.3rem;text-align:center;"></p>
+    <div id="missed-section" class="missed-list hidden">
+      <h3>📋 Questions You Missed:</h3>
+      <div id="missed-items"></div>
+    </div>
+    <div class="end-btns">
+      <button class="start-btn" id="end-again-btn" onclick="app.tryAgain()">📋 Back to My Menu<span class="form-btn-sub">Pick your next step. You stay signed in.</span></button>
+    </div>
+    <div class="signout-row" style="text-align:center;margin-top:14px;">
+      <button class="signout-btn" onclick="app.restart()">🚪 Sign Out<span class="signout-sub">Only when you are all done. You will go back to the start.</span></button>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       SCOREBOARD SCREEN
+  ══════════════════════════════════════════ -->
+  <div id="scoreboard-screen" class="hidden">
+    <h2 style="color:var(--primary);text-align:center;">📊 Score History</h2>
+    <div id="sb-lock-bar" class="hidden" style="background:#f3e8ff;border:2px solid #9b59b6;border-radius:10px;padding:8px 16px;margin-bottom:14px;display:flex;align-items:center;gap:12px;font-size:0.88rem;font-weight:bold;color:#6c3483;">
+      <span>📖 Take a moment to review your scores — buttons unlock in</span>
+      <div style="flex:1;height:8px;background:#e8d5f5;border-radius:4px;overflow:hidden;">
+        <div id="sb-lock-fill" style="height:100%;background:#9b59b6;width:100%;border-radius:4px;transition:width 0.25s linear;"></div>
+      </div>
+      <span id="sb-lock-count" style="min-width:28px;text-align:right;">60</span><span>s</span>
+    </div>
+    <p id="no-scores-msg" style="text-align:center;color:#999;display:none;">No scores yet — complete a form to record your first score!</p>
+    <div id="score-list"></div>
+    <div id="clear-confirm-panel" class="hidden"
+         style="background:#fff3cd;border:2px solid #ffc107;border-radius:12px;padding:16px 20px;margin:14px 0;">
+      <p style="margin:0 0 10px;font-weight:bold;color:#856404;">🔒 Enter Teacher PIN to clear all scores:</p>
+      <input type="password" id="clear-pin-input" placeholder="PIN…" maxlength="10" autocomplete="off"
+             onkeydown="if(event.key==='Enter') app.confirmClearScores()"
+             style="padding:9px 12px;border-radius:8px;border:2px solid #ccc;font-size:1rem;font-family:inherit;margin-bottom:8px;width:100%;"/>
+      <div id="clear-pin-error" style="color:#c0392b;font-weight:bold;min-height:18px;margin-bottom:8px;font-size:0.9rem;"></div>
+      <div style="display:flex;gap:10px;">
+        <button class="action-btn" style="background:#27ae60;box-shadow:0 4px 0 #1e8449;" onclick="app.confirmClearScores()">✅ Confirm</button>
+        <button class="action-btn" style="background:#7f8c8d;box-shadow:0 4px 0 #566573;" onclick="app.cancelClearScores()">✕ Cancel</button>
+      </div>
+    </div>
+    <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:18px;">
+      <button class="action-btn" style="background:#7f8c8d;box-shadow:0 4px 0 #566573;" onclick="app.backToMenu()">📋 Back to My Menu</button>
+    </div>
+    <div id="teacher-score-btns" style="display:none;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:10px;">
+      <button class="action-btn" style="background:#c0392b;box-shadow:0 4px 0 #922b21;" onclick="app.clearScores()">🗑️ Clear History</button>
+      <button class="action-btn" style="background:#27ae60;box-shadow:0 4px 0 #1e8449;" onclick="app.printResults()">🖨️ Print Report</button>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       TEACHER SCREEN (the Lab's screen, 10/30): Teacher Access asks the PIN in the page, then one screen — a part, a
+       version, then 👀 Try it as a student, ✅ Answer key or 🖥️ Slide Mode. Any part; nothing has to be passed first.
+       Filled in by script.js.
+  ══════════════════════════════════════════ -->
+  <div id="teacher-screen" class="hidden">
+    <div class="t-bar">
+      <span class="t-title">🧑‍🏫 Teacher</span>
+      <span class="t-note">Nothing here is saved or sent.</span>
+      <button type="button" class="t-exit" id="t-exit-btn" onclick="app.exitTeacher()">✕ Exit teacher</button>
+    </div>
+    <h3 class="t-h">Part</h3>
+    <div class="t-row" id="t-parts"></div>
+    <div id="t-version-row">
+      <h3 class="t-h">Version <span class="t-h-note">each one has its own numbers</span></h3>
+      <div class="t-row" id="t-versions"></div>
+    </div>
+    <p class="t-picked" id="t-picked"></p>
+    <div class="t-actions">
+      <button type="button" class="t-act" id="t-try" onclick="app.teacherTry()">👀 Try it as a student<span>You answer, like a student, from the first question to the score. ⏩ Skip the wait opens anything that is shut. Nothing is saved.</span></button>
+      <button type="button" class="t-act" id="t-key" onclick="app.teacherKey()">✅ Answer key<span>Every scored question of this part and version on one page, the right answer marked, and why. You can print it.</span></button>
+      <button type="button" class="t-act" id="t-slides" onclick="app.teacherSlides()">🖥️ Slide Mode<span>The lessons, big, for your desk or the board: 7 worked examples, one step at a time. Their numbers are on no question.</span></button>
+    </div>
+  </div>
+
+  <!-- 🖥️ SLIDE MODE (teaching only, Marcos 10/30): data/slides.js — worked examples whose numbers are on no question and
+       on no real test item; one step per tap, the worked picture with the last step. Never a scored question. -->
+  <div id="slide-screen" class="hidden">
+    <div class="sl-bar">
+      <span class="sl-title" id="sl-title">🖥️ Slide Mode</span>
+      <span class="sl-count" id="sl-count"></span>
+      <span class="sl-go">
+        <button type="button" class="sl-step" id="sl-prev" aria-label="Back one slide" onclick="app.slideGo(app._slides.at - 1)">◀</button>
+        <select id="sl-jump" aria-label="Jump to a slide" onchange="app.slideGo(Number(this.value)); this.blur();"></select>
+        <button type="button" class="sl-step" id="sl-fwd" aria-label="Forward one slide" onclick="app.slideGo(app._slides.at + 1)">▶</button>
+      </span>
+      <button type="button" class="sl-exit" onclick="app.exitSlides()">✕ Exit</button>
+    </div>
+    <div class="sl-body" id="sl-body"></div>
+    <div class="sl-nav">
+      <button type="button" class="action-btn sl-back" id="sl-back" onclick="app.slideBack()">◀ Back</button>
+      <button type="button" class="action-btn sl-next" id="sl-next" onclick="app.slideNext()">Next ▶</button>
+    </div>
+  </div>
+
+  <!-- ✅ ANSWER KEY (Teacher screen): filled in by script.js (teacherKey) -->
+  <div id="key-screen" class="hidden">
+    <div class="t-bar">
+      <span class="t-title" id="key-title">✅ Answer key</span>
+      <button type="button" class="t-exit" id="key-print-btn" onclick="document.body.classList.add('key-printing'); window.print(); document.body.classList.remove('key-printing');">🖨️ Print</button>
+      <button type="button" class="t-exit" id="key-back-btn" onclick="app.openTeacher()">← Teacher screen</button>
+    </div>
+    <div id="key-body"></div>
+  </div>
+
+  <!-- GLOBAL PIN MODAL -->
+  <div id="pin-modal" class="hidden">
+    <div class="pin-modal-inner">
+      <h3 id="pin-modal-title" style="color:var(--primary);margin:0 0 10px;text-align:center;"></h3>
+      <p  id="pin-modal-msg"   style="text-align:center;color:#555;margin-bottom:14px;font-size:0.95rem;line-height:1.5;"></p>
+      <input type="password" id="pin-modal-input" placeholder="Teacher PIN…" maxlength="10" autocomplete="off"
+             onkeydown="if(event.key==='Enter') app.confirmPinModal()"
+             style="width:100%;padding:11px 14px;border-radius:10px;border:2px solid #ccc;
+                    font-size:1.05rem;font-family:inherit;margin-bottom:8px;" />
+      <div id="pin-modal-error"
+           style="color:#c0392b;font-weight:bold;min-height:20px;margin-bottom:10px;font-size:0.9rem;text-align:center;"></div>
+      <div style="display:flex;gap:10px;justify-content:center;">
+        <button class="action-btn" style="background:#27ae60;box-shadow:0 4px 0 #1e8449;" onclick="app.confirmPinModal()">✅ Confirm</button>
+        <button class="action-btn" style="background:#7f8c8d;box-shadow:0 4px 0 #566573;" onclick="app.cancelPinModal()">✕ Cancel</button>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /.container -->
+
+<!-- 👀 Try it as a student: the teacher's bar (shown only on a ?teach= link) -->
+<div id="teach-bar" class="teach-bar hidden">
+  <span class="teach-bar-what">🧑‍🏫 Trying it as a student · nothing is saved</span>
+  <span class="teach-go">
+    <button type="button" id="teach-prev" aria-label="Back one" onclick="app.teachStep(-1)">◀</button>
+    <select id="teach-jump" aria-label="Go to a question" onchange="app.teachGo(Number(this.value)); this.blur();"></select>
+    <button type="button" id="teach-next" aria-label="Forward one" onclick="app.teachStep(1)">▶</button>
+  </span>
+  <button type="button" id="teach-skip" onclick="app.teacherSkipWait()">⏩ Skip the wait</button>
+  <button type="button" id="teach-back" onclick="app.backToTeacher()">← Teacher screen</button>
+</div>
+
+<script src="share.js?v=4"></script>
+<script src="form-label.js?v=1"></script>
+<!-- the Kokoro voice (Marcos 11/3: "Kokoro (recorded)"): every line the site can say, made ahead (site-tests mm3-kokoro.spec.js
+     → kokoro-voice/make_lines.py); kokoro-voice.js plays them in place of the device voice. Before next-waits.js, which listens to it. -->
+<script src="kokoro/lines.js?v=4b0c9c7d"></script>
+<script src="kokoro-voice.js?v=1"></script>
+<script src="next-waits.js?v=1" data-hold='#next-btn, #lc-next'></script>
+<script src="data/form_w.js?v=m3b"></script>
+<script src="data/form_p.js?v=m3b"></script>
+<script src="data/form_a.js?v=m3b"></script>
+<script src="data/form_b.js?v=m3b"></script>
+<script src="data/form_t.js?v=m3b"></script>
+<script src="data/form_u.js?v=m3b"></script>
+<script src="data/twin_x.js?v=m3b"></script>
+<script src="data/twin_y.js?v=m3b"></script>
+<script src="data/words.js?v=m3b"></script>
+<script src="data/skills.js?v=m3b"></script>
+<script src="data/slides.js?v=m3b"></script>
+<script src="visuals.js?v=m3b"></script>
+<script src="script.js?v=m3b"></script>
+</body>
+</html>

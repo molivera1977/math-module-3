@@ -1,0 +1,4 @@
+.DS_Store
+.claude/
+# the generator and its checks hold the real test's numbers (tools/blueprint.js) — never on the public site
+tools/
