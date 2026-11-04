@@ -775,6 +775,20 @@ button.answer-btn.incorrect { background: #f8d7da; border-color: #dc3545; color:
 .listen-btn.playing { background: #7f8c8d; box-shadow: 0 4px 0 #566573; cursor: default; }
 .listen-btn:disabled { background: #b0b7ba; box-shadow: 0 4px 0 #8a9194; cursor: not-allowed; }
 .listen-btn.heard { font-size: 0.9rem; padding: 6px 14px; background: #fff; color: #2c3e50; border: 2px solid #c8d0d3; box-shadow: none; }
+/* The Listen to tap pulses (Marcos 11/4: "shouldnt this pulse"), like the next step on his other sites: a soft ring
+   breathes out every 2 s while it waits for a tap (and "✅ I read it"); never while it plays, and not once it is heard.
+   A device set to reduce motion gets a steady ring. */
+@keyframes listen-pulse {
+  0%, 100% { box-shadow: 0 4px 0 #922b21, 0 0 0 0 rgba(192, 57, 43, 0.55); }
+  50%      { box-shadow: 0 4px 0 #922b21, 0 0 0 12px rgba(192, 57, 43, 0); }
+}
+.listen-btn:not(.playing):not(.heard):not(:disabled) { animation: listen-pulse 2s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) {
+  .listen-btn:not(.playing):not(.heard):not(:disabled) { animation: none; box-shadow: 0 4px 0 #922b21, 0 0 0 4px rgba(192, 57, 43, 0.45); }
+}
+/* Only a 🔊 that must be pressed to go on gets attention (Marcos 11/4: "i dont think these need to glow unless it
+   has to be pressed in order to advance"): the 🔊 on the directions, question, choices, hint, word cards and
+   feedback are a choice, so they stay plain. */
 .listen-note { font-size: 0.95rem; font-weight: 700; color: #6b3d00; }
 .listen-dir    { background: #fdecea; border-color: #f1a9a0; }
 .listen-dir h3 { color: #922b21; }

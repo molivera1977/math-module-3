@@ -8,5 +8,5 @@ window.WORDS = [
   {"key":"equation","word":"equation","find":["equation"],"means":"An equation has an equal sign. The two sides are the same amount.","ex":"A letter can stand for the number you do not know."},
   {"key":"more","word":"how many more","find":["how many more"],"means":"How many more means find the difference. Subtract the smaller number from the bigger number.","ex":"Ten is 3 more than seven."},
   {"key":"truefalse","word":"true or false","find":["true or false"],"means":"True means the sentence is right. False means the sentence is wrong.","ex":"Multiply to check a times as many sentence."},
-  {"key":"bar","word":"bar model","find":["bar model"],"means":"A bar model uses boxes to show numbers. Every box in a bar is the same size.","ex":"The bracket under a bar shows the total."}
+  {"key":"bar","word":"bar model","find":["bar model"],"means":"A bar model shows numbers with boxes. Each box is one group. Every group in a bar is the same size.","ex":"The bracket under a bar shows the total."}
 ];
