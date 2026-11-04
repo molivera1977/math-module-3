@@ -199,14 +199,14 @@
     if (cfg.ask === 'times') {
       bottom = `<div class="m3-row"><div class="m3-cell m3-long">${cell(cfg.total)}</div></div>`;
       brk = `<div class="m3-brk-lab">? times as many</div>`;
-      said = `Bar model. The top bar is one group of ${cell(cfg.n)}. The bottom bar holds ${cell(cfg.total)}. How many times as many is missing.`;
+      said = `Bar model. ${cfg.top ? `The top bar is ${cfg.top}: ` : 'The top bar is '}one group of ${cell(cfg.n)}. ${cfg.bottom ? `The bottom bar is ${cfg.bottom}. The total for ${cfg.bottom} is` : 'The bottom bar holds'} ${cell(cfg.total)}. How many times as many is missing.`;
     } else {
       const cells = Array.from({ length: t }, (_, i) =>
         `<div class="m3-cell${askCls}${cfg.more && cfg.ask == null && i > 0 ? ' m3-more' : ''}">${cell(cfg.n)}</div>`).join('');
       bottom = `<div class="m3-row">${cells}</div>`;
       const lab = cfg.ask === 'total' ? '?' : cfg.ask === 'letter' ? esc(cfg.letter) : cfg.ask === 'small' ? cell(cfg.total) : cell(total);
       brk = `<div class="m3-brk" aria-hidden="true"></div><div class="m3-brk-lab${cfg.ask == null ? ' m3-ans' : ''}">${lab}</div>`;
-      said = `Bar model. The top bar is one group of ${cell(cfg.n)}. The bottom bar is ${t} groups of ${cell(cfg.n)}. The total is ${cfg.ask === 'total' ? 'missing' : lab}.`;
+      said = `Bar model. ${cfg.top ? `The top bar is ${cfg.top}: ` : 'The top bar is '}one group of ${cell(cfg.n)}. ${cfg.bottom ? `The bottom bar is ${cfg.bottom}: ` : 'The bottom bar is '}${t} groups of ${cell(cfg.n)}. ${cfg.bottom ? `The total for ${cfg.bottom}` : 'The total'} is ${cfg.ask === 'total' ? 'missing' : lab}.`;
     }
     const legend = cfg.more && cfg.ask == null ? `<div class="m3-legend" aria-hidden="true">The shaded groups are how many more.</div>` : '';
     return `<div class="m2-vis m3-mult" role="img" aria-label="${esc(said)}">` +
