@@ -154,7 +154,9 @@ function submitScorePartial() {
       wrongQuestions: (app.missedQuestions||[]).map(missEntry).join(' | '),
       startedAt:      app.startedAt || '',
       finishedAt:     app.finishedAt || '',
-      events:         JSON.stringify(app.events || []),
+      // where the student is now, for the dashboard (Marcos 11/5: "i should know what question they are on"). The sheet
+      // keeps no status text, only the events, so the item rides at the end of this row's copy of the log (never in app.events).
+      events:         JSON.stringify([...(app.events || []), { e: 'on', q: app.currentIndex + 1, of: app.currentBank.length }]),
       timestamp:      new Date().toLocaleString('en-US', { timeZone: 'America/New_York' })
     })
   }).catch(() => {});
@@ -1508,7 +1510,7 @@ const app = {
     // Saved right after answering the last question → nothing left to ask
     if (this.currentIndex >= this.currentBank.length) { this._finishSession(); return; }
     this.renderQuestion();
-    submitScorePartial();   // a student who comes back shows up again right away
+    if (!this.currentIndex) submitScorePartial();   // a student who comes back shows up again right away (later items send their own)
   },
 
   saveProgress() {
@@ -1711,9 +1713,10 @@ const app = {
       : `Question ${this.currentIndex + 1} of ${total}`;
     this.readSecs = q.kind === 'step' ? STEP_READ_SECS : READ_SECS;
     this.nextSecs = q.kind === 'step' ? STEP_NEXT_SECS : NEXT_SECS;
-    // The dashboard hears from a student every 5 items, counting the Warm-Up's worked examples (Marcos 11/5: "people that
-    // have started arent showing" — a Warm-Up kid sent nothing until item 6, ~10 minutes in, and a worked example sent nothing)
-    if (!this.twin && this.currentIndex > 0 && this.currentIndex % 5 === 0) submitScorePartial();
+    // The dashboard hears from a student at every item, the Warm-Up's worked examples included (Marcos 11/5: "people that
+    // have started arent showing" — a Warm-Up kid sent nothing until item 6, ~10 minutes in; then "i should know what
+    // question they are on"). Item 1 is sent by startSession / resume.
+    if (!this.twin && this.currentIndex > 0) submitScorePartial();
     if (q.kind === 'watch') { this._renderWatch(q, total); return; }
     document.getElementById('speak-q-btn').classList.remove('hidden');
     // "Try one like it" strip: shown only while a twin question is up
