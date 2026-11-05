@@ -1462,6 +1462,7 @@ const app = {
     logEvent('start', { v: this.version + 1 });
     this.startTimer();
     this.renderQuestion();
+    submitScorePartial();   // on the dashboard as In Progress the moment a student starts (Marcos 11/5)
   },
 
   /* ── RESUME ── */
@@ -1507,6 +1508,7 @@ const app = {
     // Saved right after answering the last question → nothing left to ask
     if (this.currentIndex >= this.currentBank.length) { this._finishSession(); return; }
     this.renderQuestion();
+    submitScorePartial();   // a student who comes back shows up again right away
   },
 
   saveProgress() {
@@ -1709,6 +1711,9 @@ const app = {
       : `Question ${this.currentIndex + 1} of ${total}`;
     this.readSecs = q.kind === 'step' ? STEP_READ_SECS : READ_SECS;
     this.nextSecs = q.kind === 'step' ? STEP_NEXT_SECS : NEXT_SECS;
+    // The dashboard hears from a student every 5 items, counting the Warm-Up's worked examples (Marcos 11/5: "people that
+    // have started arent showing" — a Warm-Up kid sent nothing until item 6, ~10 minutes in, and a worked example sent nothing)
+    if (!this.twin && this.currentIndex > 0 && this.currentIndex % 5 === 0) submitScorePartial();
     if (q.kind === 'watch') { this._renderWatch(q, total); return; }
     document.getElementById('speak-q-btn').classList.remove('hidden');
     // "Try one like it" strip: shown only while a twin question is up
@@ -1803,7 +1808,6 @@ const app = {
       wrap.appendChild(row);
     });
 
-    if (!this.twin && this.currentIndex > 0 && this.currentIndex % 5 === 0) submitScorePartial();
     this.saveProgress();
     this.startReadTimer();
     if (sayHint) {
