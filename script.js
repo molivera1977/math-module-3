@@ -1273,7 +1273,11 @@ const app = {
     const qs = this._teachBank(t).filter(isScored);
     const why = q => q.explanation || q.explain
       ? `<div class="key-why">${q.explanation ? `<b>Why:</b> ${formatMathText(q.explanation)}` : ''}${q.explain ? M2V.explainHTML(q.explain) : ''}</div>` : '';
-    const html = [`<p class="key-note">Each child sees the choices in a shuffled order, so there are no letters here. The right answer has a ✅.</p>`];
+    // the paper's own title (Marcos 11/4: "every print version should have a title"): Print hides the bar above,
+    // so the printout says which part and version it is
+    const html = [`<div class="key-print-head"><h1>Math Module 3 Answer Key — ${this._teachLabel(t.form, t.version)}</h1>` +
+      `<p>Times as Many · Mr. O's 4th Grade · ${qs.length} questions, all multiple choice</p></div>`,
+      `<p class="key-note">Each child sees the choices in a shuffled order, so there are no letters here. The right answer has a ✅.</p>`];
     qs.forEach((q, i) => {
       const pic = q.pic && !q.explain ? `<div class="key-pic">${M2V.picHTML(q.pic)}</div>` : '';   // the worked picture under Why shows the same model
       const choices = `<ul class="key-choices">${q.choices.map(c =>

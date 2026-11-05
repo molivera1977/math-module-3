@@ -884,7 +884,14 @@ body.teach-on { padding-bottom: 64px; }
 .key-choices li.key-right { color: #1e7e46; font-weight: 700; }
 .key-why { margin-top: 8px; padding: 8px 12px; background: #f1f8f4; border-radius: 10px; }
 
+/* the printed key's title (Marcos 11/4: "every print version should have a title"): on paper only, in place of
+   the bar Print hides */
+.key-print-head { display: none; }
 @media print {
+  @page { size: letter; margin: 0.5in; }
+  body.key-printing .key-print-head { display: block; margin: 0 0 8px; padding-bottom: 8px; border-bottom: 2px solid #333; }
+  body.key-printing .key-print-head h1 { margin: 0; font-size: 18pt; line-height: 1.2; color: #000; }
+  body.key-printing .key-print-head p { margin: 4px 0 0; font-size: 11pt; color: #333; }
   body.key-printing { background: #fff; padding: 0; }
   body.key-printing .container > :not(#key-screen),
   body.key-printing #key-screen .t-bar,
