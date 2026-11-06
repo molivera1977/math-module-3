@@ -44,8 +44,8 @@ const SHARE_MODE    = !!window.SHARE_MODE;   // set by share.js — a visitor's 
 const WARM_UP_OPEN    = true;    // Step 1 · Warm-Up — watch, step by step, then easier questions
 const PRACTICE_A_OPEN = true;    // Step 2 · Practice A — the hints read themselves aloud
 const PRACTICE_B_OPEN = true;    // Step 3 · Practice B — hints and word help (Module 3: Warm-Up + Practice A open first, Marcos 11/3; Practice B opened 11/5)
-const REVIEW_OPEN     = false;   // Step 4 · Review — no hints, no word help (the last stop before the test)
-const TEST_OPEN       = false;   // Step 5 · Test — official (its retake needs the Teacher PIN)
+const REVIEW_OPEN     = true;    // Step 4 · Review — no hints, no word help (the last stop before the test; opened 11/5)
+const TEST_OPEN       = true;    // Step 5 · Test — official (its retake needs the Teacher PIN; opened 11/5)
 // THE GATES — Marcos 10/10: "Let's make Practice A and B unlimited, Review requires completing
 // Practice A and Practice B and a 70% on Practice B, Test requires 70 % on Review."
 //   Warm-Up, Practice A, Practice B  as many times as they like
