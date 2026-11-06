@@ -832,6 +832,21 @@ button.answer-btn.incorrect { background: #f8d7da; border-color: #dc3545; color:
 .m3-brk-lab.m3-ans { color: var(--correct-dk); }
 .m3-legend { grid-column: 1 / -1; font-size: 0.85rem; color: #8a5a00; text-align: center; font-weight: 700; }
 @media (max-width: 480px) { .m3-cell { font-size: 0.95rem; padding: 0 2px; } .m3-who { max-width: 5em; font-size: 0.85rem; } }
+/* Pre-Warm-Up: equal groups of dots (visuals.js groupsHTML, Marcos 11/6) */
+.m3-groups { display: grid !important; grid-template-columns: auto minmax(0, 1fr); gap: 10px 12px; align-items: center; font-weight: 800; }
+.m2-explain .m3-groups { display: grid !important; }
+.m3-g-row { display: flex; flex-wrap: wrap; gap: 10px; }
+.m3-g-loose { gap: 7px; max-width: 18em; }
+.m3-grp { display: flex; flex-wrap: wrap; align-content: center; justify-content: center; gap: 5px; width: 4.4em; min-height: 4.4em; padding: 8px; border: 3px solid #2c3e50; border-radius: 50%; background: #fff; }
+.m3-grp.m3-more { background: #fde9c8; }
+.m3-grp-q { font-size: 1.5rem; color: var(--primary); }
+.m3-dot { display: inline-block; width: 0.8em; height: 0.8em; border-radius: 50%; background: #e67e22; }
+.m3-g-loose .m3-dot { width: 0.9em; height: 0.9em; }
+.m3-g-lab { font-size: 1.1rem; }
+.m3-g-lab.m3-ans { color: var(--correct-dk); }
+.start-btn.pre-warm-up-btn { background: #b9770e; box-shadow: 0 5px 0 #7e5109; }
+.start-btn.pre-warm-up-btn:hover { box-shadow: 0 8px 0 #7e5109; }
+.part-banner.pb-pre-warm-up { background: #9c640c; }
 
 /* ═══════════════════════════════════════════════════════
    TEACHER SCREEN (the Lab's screen, 10/30): a part, a version, then 👀 Try it as a student, ✅ Answer key, 🖥️ Slide

@@ -11,6 +11,9 @@
    "can we create an easier version than Practice A to help teach and prepare students for
    Practice A?" — "a mandatory read aloud listen with a worked example then step by step and an
    easier Practice A", 70% to move on):
+     PRE-WARM-UP         form Z  (Marcos 11/6) for a student whose Warm-Up came out below 9 of 12: four short lessons the
+                                 Warm-Up's way (equal groups, the times number, share, two steps), dots in groups for pictures,
+                                 8 scored; shows after a finished Warm-Up; required once before the next Warm-Up; locked once passed
      Step 1  WARM-UP     form W  per skill: a worked example the student must hear to the end, a problem worked one place at a time
                                  (steps, NOT scored), then easier questions (12, scored); in order; unlimited; 70% opens Practice A
      Step 2  PRACTICE A  form P  smaller numbers, in order, problem in columns, hints read aloud by themselves, word help; unlimited; 70% opens Practice B
@@ -32,7 +35,7 @@
      question of the same kind (twin_x.js / twin_y.js); it never changes the score
    - WORD HELP — a button under the question for each math word in it (data/words.js);
      Practice A and Practice B only
-   Game keys mod3w-warmup (Warm-Up) / mod3-practice (Practice A) / mod3a-review (Practice B) / mod3b-review (Review) /
+   Game keys mod3z-prewarmup (Pre-Warm-Up) / mod3w-warmup (Warm-Up) / mod3-practice (Practice A) / mod3a-review (Practice B) / mod3b-review (Review) /
    mod3t-test (Test) / mod3u-test (retake), storage prefix mm3_. Pictures live in visuals.js.
    PIN: 9377 (Teacher override)
 ═══════════════════════════════════════════════════════ */
@@ -74,8 +77,9 @@ const SESSION_ID = (() => {
   return id;
 })();
 
-const FORMS = ['W', 'P', 'A', 'B', 'T', 'U'];
-const isWarmUp = form => form === 'W';
+const FORMS = ['Z', 'W', 'P', 'A', 'B', 'T', 'U'];
+// The Pre-Warm-Up (form Z, Marcos 11/6) is built and taught the way the Warm-Up is: worked examples, steps, then questions
+const isWarmUp = form => form === 'W' || form === 'Z';
 const isPractice = form => form === 'P';
 const isReview = form => form === 'A' || form === 'B';
 const isTest   = form => form === 'T' || form === 'U';
@@ -94,17 +98,17 @@ const isScored = q => !!q && !q.kind;
 const scoredCount = bank => (bank || []).filter(isScored).length;
 // Word help (a button per math word) is a support, so it comes off one step before the test:
 // Practice A and Practice B have it; the Review and the Test do not (Marcos 10/10).
-const wordHelp = form => form === 'W' || form === 'P' || form === 'A';
+const wordHelp = form => form === 'Z' || form === 'W' || form === 'P' || form === 'A';
 // "Try one like it": after a miss in a review, one more question of the same kind from this bank
 const TWINS = { A: 'X', B: 'Y' };
-const FORM_NAMES = { W: 'Warm-Up', P: 'Practice A', A: 'Practice B', B: 'Review', T: 'Test', U: 'Test (Retake)' };
+const FORM_NAMES = { Z: 'Pre-Warm-Up', W: 'Warm-Up', P: 'Practice A', A: 'Practice B', B: 'Review', T: 'Test', U: 'Test (Retake)' };
 function formOpen(form) {
   return SHARE_MODE || (isWarmUp(form) ? WARM_UP_OPEN : isPractice(form) ? PRACTICE_A_OPEN : form === 'A' ? PRACTICE_B_OPEN : form === 'B' ? REVIEW_OPEN : TEST_OPEN);
 }
 const ANY_OPEN = WARM_UP_OPEN || PRACTICE_A_OPEN || PRACTICE_B_OPEN || REVIEW_OPEN || TEST_OPEN;
 /* Sheet / dashboard game key — one per form */
 function gameKey(form) {
-  return { W: 'mod3w-warmup', P: 'mod3-practice', A: 'mod3a-review', B: 'mod3b-review', T: 'mod3t-test', U: 'mod3u-test' }[form];
+  return { Z: 'mod3z-prewarmup', W: 'mod3w-warmup', P: 'mod3-practice', A: 'mod3a-review', B: 'mod3b-review', T: 'mod3t-test', U: 'mod3u-test' }[form];
 }
 
 /* ── SHEET SUBMISSION ───────────────────────────────── */
@@ -125,7 +129,7 @@ function missEntry(m) {
 
 /* What the sheet's "form" column says: Practice A · Practice B · Review · Test · Test — Retake */
 function formLabel(attempt) {
-  return { W: 'Warm-Up', P: 'Practice A', A: 'Practice B', B: 'Review', T: 'Test', U: 'Test — Retake' }[app.currentForm];
+  return { Z: 'Pre-Warm-Up', W: 'Warm-Up', P: 'Practice A', A: 'Practice B', B: 'Review', T: 'Test', U: 'Test — Retake' }[app.currentForm];
 }
 /* The attempt this session will be once it finishes (finished ones on this device + 1). */
 function upcomingAttempt() {
@@ -259,10 +263,10 @@ let reviewAutoRun   = false;   // pop-ups (the Lab's screen, 10/30) — the site
    sheet) on ?teach=<PART>.<version>, started the way a first try starts. */
 const TEACHER_KEY      = 'mm3_teacher';        // sessionStorage: '1' = the Teacher PIN was given in this tab
 const TEACHER_PICK_KEY = 'mm3_teacher_pick';   // sessionStorage: the last part and version picked
-const TEACH_PARTS      = ['W', 'P', 'A', 'B', 'T', 'U'];
+const TEACH_PARTS      = ['Z', 'W', 'P', 'A', 'B', 'T', 'U'];
 const versionCount = id => { const v = window['FORM_' + id + '_V']; return Array.isArray(v) && v.length ? v.length : 1; };
 const TEACH = (() => {
-  const m = /^([WPABTU])\.(\d+)$/.exec(new URLSearchParams(location.search).get('teach') || '');
+  const m = /^([ZWPABTU])\.(\d+)$/.exec(new URLSearchParams(location.search).get('teach') || '');
   return SHARE_MODE && m ? { form: m[1], version: Number(m[2]) } : null;
 })();
 function teacherUnlocked() { try { return sessionStorage.getItem(TEACHER_KEY) === '1'; } catch (e) { return false; } }
@@ -486,7 +490,7 @@ function speakWordCard(btn) {
 /* ── PART BANNER (Marcos 10/8: "I want to be able to know which part the
    students are on") — a big colored label on top of every question:
    the step number and the part's name, one color per part. ── */
-const PART_BANNER = { W: ['🔥', 'Step 1 · Warm-Up', 'pb-warm-up'], P: ['🌱', 'Step 2 · Practice A', 'pb-practice-a'], A: ['🧭', 'Step 3 · Practice B', 'pb-practice-b'], B: ['📘', 'Step 4 · Review', 'pb-review'], T: ['📝', 'Step 5 · Test', 'pb-quiz'], U: ['📝', 'Step 5 · Test', 'pb-quiz'] };
+const PART_BANNER = { Z: ['🧱', 'Pre-Warm-Up', 'pb-pre-warm-up'], W: ['🔥', 'Step 1 · Warm-Up', 'pb-warm-up'], P: ['🌱', 'Step 2 · Practice A', 'pb-practice-a'], A: ['🧭', 'Step 3 · Practice B', 'pb-practice-b'], B: ['📘', 'Step 4 · Review', 'pb-review'], T: ['📝', 'Step 5 · Test', 'pb-quiz'], U: ['📝', 'Step 5 · Test', 'pb-quiz'] };
 function setPartBanner(form) {
   const el = document.getElementById('part-banner');
   const p = PART_BANNER[form];
@@ -548,7 +552,7 @@ function addHighlightFallback(u, spans) {
 /* ── ATTEMPT TRACKING ───────────────────────────────── */
 function getFormAttempts(name) {
   const scores = JSON.parse(localStorage.getItem(SCORES_KEY) || '[]');
-  const counts = { W: 0, P: 0, A: 0, B: 0, T: 0, U: 0 };
+  const counts = { Z: 0, W: 0, P: 0, A: 0, B: 0, T: 0, U: 0 };
   scores.filter(s => s.name === name && s.done).forEach(s => {
     if (counts[s.form] !== undefined) counts[s.form]++;
   });
@@ -578,6 +582,24 @@ function passed(name, form) {
 /* How many right it takes: 70% of 17 questions = 12 */
 function needFor(form) {
   return Math.ceil(PASS_PCT / 100 * scoredCount(window['FORM_' + form]));
+}
+/* THE PRE-WARM-UP (Marcos 11/6: "how about a pre-warmup for just those students"): it appears once a student has
+   finished a Warm-Up. A student whose Warm-Ups are all below the mark must finish the Pre-Warm-Up once before the
+   next Warm-Up ("Required first"). "anyone who has already passed the warm up should have this locked". The Teacher
+   PIN lets one student past either lock. */
+function preWarmUpShown(name) {
+  return ANY_ORDER || SHARE_MODE || getFormAttempts(name).W > 0;
+}
+function preWarmUpWait(name) {
+  if (ANY_ORDER || SHARE_MODE) return '';
+  if (passed(name, 'W')) return 'You passed the Warm-Up';
+  return '';
+}
+function warmUpWait(name) {
+  if (ANY_ORDER || SHARE_MODE) return '';
+  const a = getFormAttempts(name);
+  if (a.W > 0 && !passed(name, 'W') && a.Z === 0) return 'Finish the Pre-Warm-Up first';
+  return '';
 }
 /* Why Practice A is not open for this student yet ('' = it is open). A student who already
    passed Practice A keeps it (the Warm-Up came after them). */
@@ -636,12 +658,21 @@ function applyFormLocks(name) {
   const startCard = document.getElementById('quiz-start-card');
   const doneCard  = document.getElementById('completed-container');
   const retake    = document.getElementById('retake-card');
+  // Pre-Warm-Up: shows after a finished Warm-Up; open until the Warm-Up is passed, then locked (see preWarmUpShown)
+  const preCard = document.getElementById('pre-warm-up-card');
+  if (preCard) preCard.classList.toggle('hidden', !preWarmUpShown(name));
+  const bestZ = bestScore(name, 'Z'), nZ = scoredCount(window.FORM_Z);
+  setFormButton('Z', '🧱 Pre-Warm-Up',
+    !bestZ ? `smaller steps · ${nZ} questions · 💡 hints`
+    : `✅ Done: ${bestZ.score} of ${bestZ.total} · do it again any time`,
+    preWarmUpWait(name));
   // Warm-Up: no limit. After a try the button shows the best score and what opens Practice A.
   const bestW = bestScore(name, 'W'), nW = scoredCount(window.FORM_W);
   setFormButton('W', '🔥 Warm-Up',
     !bestW ? `watch, then try · ${nW} questions · 💡 hints`
     : passed(name, 'W') ? `✅ Best: ${bestW.score} of ${bestW.total} · do it again any time`
-    : `🔁 Best: ${bestW.score} of ${bestW.total} · get ${needFor('W')} to open Practice A`);
+    : `🔁 Best: ${bestW.score} of ${bestW.total} · get ${needFor('W')} to open Practice A`,
+    warmUpWait(name));
   // Practice A: waits for 70% on the Warm-Up; no limit. After a try the button shows the best score and what opens Practice B.
   const bestA = bestScore(name, 'P');
   setFormButton('P', '🌱 Practice A',
@@ -915,7 +946,7 @@ function logEvent(kind, extra) {
    A big colored label pinned to the top of the test screens naming
    the form or part this student is on, so Mr. O can read it from
    across the room (Marcos 10/20). show() calls syncFormLabel(). */
-const PART_LABEL_COLORS = { 'pb-warm-up': '#d35400', 'pb-practice-a': '#1e8449', 'pb-practice-b': '#117a65', 'pb-review': '#2471a3', 'pb-quiz': '#3b2491' };
+const PART_LABEL_COLORS = { 'pb-pre-warm-up': '#9c640c', 'pb-warm-up': '#d35400', 'pb-practice-a': '#1e8449', 'pb-practice-b': '#117a65', 'pb-review': '#2471a3', 'pb-quiz': '#3b2491' };
 let formLabelShown = null;   // [form, text, color] — the results screen keeps the label the questions had
 function syncFormLabel(screenId) {
   if (!window.FormLabel) return;
@@ -1091,18 +1122,21 @@ const app = {
 
   /* ── ATTEMPT START ── */
   attemptStart(form) {
-    if (!this.studentName || !['W', 'P', 'A', 'B', 'T'].includes(form) || !formOpen(form)) return;
+    if (!this.studentName || !['Z', 'W', 'P', 'A', 'B', 'T'].includes(form) || !formOpen(form)) return;
+    if (form === 'Z' && !preWarmUpShown(this.studentName)) return;
     // The test is one try — a finished one needs a Teacher-PIN retake
     if (form === 'T' && testCompleted(this.studentName)) { applyFormLocks(this.studentName); return; }
     // The gates: Practice A waits for 70% on the Warm-Up; Practice B waits for 70% on Practice A; the Review
     // waits for Practice A + 70% on Practice B; the Test waits for 70% on the Review. The Teacher PIN lets this one student past.
+    // The Warm-Up waits for the Pre-Warm-Up after a Warm-Up below the mark; the Pre-Warm-Up locks once the Warm-Up is passed.
     const why = form === 'T' ? testWait(this.studentName) : form === 'B' ? reviewWait(this.studentName)
-      : form === 'A' ? practiceBWait(this.studentName) : form === 'P' ? practiceAWait(this.studentName) : '';
+      : form === 'A' ? practiceBWait(this.studentName) : form === 'P' ? practiceAWait(this.studentName)
+      : form === 'W' ? warmUpWait(this.studentName) : form === 'Z' ? preWarmUpWait(this.studentName) : '';
     if (why) {
       this.showPinModal(
         '📘 Not Yet',
         `${getFirstName(this.studentName)}: ${why.charAt(0).toLowerCase() + why.slice(1)}. ` +
-        `Teachers: enter your PIN to let this student ${form === 'T' ? 'take the test' : form === 'B' ? 'start the Review' : form === 'A' ? 'start Practice B' : 'start Practice A'} now.`,
+        `Teachers: enter your PIN to let this student ${form === 'T' ? 'take the test' : form === 'B' ? 'start the Review' : form === 'A' ? 'start Practice B' : form === 'P' ? 'start Practice A' : form === 'W' ? 'start the Warm-Up' : 'start the Pre-Warm-Up'} now.`,
         () => this.startSession(form)
       );
       return;
@@ -1147,7 +1181,7 @@ const app = {
   _teacherPick() {
     let p = null;
     try { p = JSON.parse(sessionStorage.getItem(TEACHER_PICK_KEY) || 'null'); } catch (e) {}
-    const form = p && TEACH_PARTS.includes(p.form) ? p.form : TEACH_PARTS[0];
+    const form = p && TEACH_PARTS.includes(p.form) ? p.form : 'W';   // the Warm-Up first (the Pre-Warm-Up is for a few students)
     const version = p && p.version >= 1 && p.version <= versionCount(form) ? p.version : 1;
     return { form, version };
   },

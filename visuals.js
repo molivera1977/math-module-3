@@ -215,9 +215,48 @@
       legend + `</div>`;
   }
 
+  /* ── EQUAL GROUPS OF DOTS (Module 3 Pre-Warm-Up — Marcos 11/6) ──
+     For the student who is not ready for the bar model: "4 times as many as 2" is 4 groups of 2 dots.
+     Names at the side, like the bar model.
+     cfg = { t, n, ask, top?, bottom?, more?, share? }
+       ask   = 'total' → one group of n on top, t groups of n below, "?" for how many in all
+               'share' → t × n loose dots on top, t empty groups below, each "?" (find the smaller amount)
+               null    → worked: the groups and the equation in green
+                         (share: true → only the t shared groups and the ÷ equation)
+       more  = shade groups 2…t (the "how many more" part of a two-step problem) */
+  function groupsHTML(cfg) {
+    const t = cfg.t, n = cfg.n, P = t * n;
+    const dots = k => Array.from({ length: k }, () => '<span class="m3-dot"></span>').join('');
+    const group = (k, cls) => `<div class="m3-grp${cls ? ' ' + cls : ''}">${k == null ? '<span class="m3-grp-q">?</span>' : dots(k)}</div>`;
+    const who = name => `<div class="m3-who${name ? '' : ' m3-who-empty'}" aria-hidden="true">${esc(name || '')}</div>`;
+    const row = inner => `<div class="m3-g-row" aria-hidden="true">${inner}</div>`;
+    const lab = (text, ans) => `<div class="m3-g-lab${ans ? ' m3-ans' : ''}" aria-hidden="true">${esc(text)}</div>`;
+    let body, said;
+    if (cfg.ask === 'share') {
+      body = who('') + `<div class="m3-g-row m3-g-loose" aria-hidden="true">${dots(P)}</div>` +
+        who('') + row(Array.from({ length: t }, () => group(null)).join('')) +
+        '<div></div>' + lab(`${P} shared into ${t} equal groups`);
+      said = `${P} dots to share into ${t} equal groups. How many go in each group is missing.`;
+    } else if (cfg.ask == null && cfg.share) {
+      body = who(cfg.top) + row(Array.from({ length: t }, () => group(n)).join('')) +
+        '<div></div>' + lab(`${P} ÷ ${t} = ${n}`, true);
+      said = `${P} dots shared into ${t} equal groups. Each group has ${n}.`;
+    } else {
+      const groupsBelow = Array.from({ length: t }, (_, i) => group(n, cfg.more && cfg.ask == null && i > 0 ? 'm3-more' : '')).join('');
+      body = who(cfg.top) + row(group(n)) +
+        who(cfg.bottom) + row(groupsBelow) +
+        '<div></div>' + (cfg.ask === 'total' ? lab('? in all') : lab(`${t} × ${n} = ${P}`, true));
+      said = `${cfg.top ? cfg.top + ': ' : ''}one group of ${n} dots. ${cfg.bottom ? cfg.bottom + ': ' : ''}${t} groups of ${n} dots. ` +
+        (cfg.ask === 'total' ? 'How many in all is missing.' : `${t} times ${n} is ${P}.`);
+    }
+    const legend = cfg.more && cfg.ask == null ? `<div class="m3-legend" aria-hidden="true">The shaded groups are how many more.</div>` : '';
+    return `<div class="m2-vis m3-groups" role="img" aria-label="${esc(said)}">${body}${legend}</div>`;
+  }
+
   /* Picture under the question — set up, never solved */
   function picHTML(pic) {
     if (!pic) return '';
+    if (pic.groups) return groupsHTML(pic.groups);
     if (pic.mult)  return multHTML(pic.mult);
     if (pic.rect)  return rectSVG(pic.rect);
     if (pic.stack) return stackHTML(pic.stack, pic.stack.done ? 'done' : 'ask');
@@ -230,6 +269,7 @@
   function explainHTML(ex) {
     if (!ex) return '';
     let out = '';
+    if (ex.groups) out += groupsHTML(ex.groups);
     if (ex.mult)  out += multHTML(ex.mult);
     if (ex.bar)   out += barHTML(ex.bar);
     if (ex.rect)  out += rectSVG(ex.rect);
@@ -238,7 +278,7 @@
     return out ? `<div class="m2-explain">${out}</div>` : '';
   }
 
-  const api = { stackModel, stepState, stackHTML, rectSVG, barHTML, multHTML, workHTML, picHTML, explainHTML };
+  const api = { stackModel, stepState, stackHTML, rectSVG, barHTML, multHTML, groupsHTML, workHTML, picHTML, explainHTML };
   root.M2V = api;
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
 })(typeof window !== 'undefined' ? window : globalThis);

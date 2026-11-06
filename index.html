@@ -11,7 +11,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Andika:wght@400;700&family=Lexend:wght@500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=m3f" />
+  <link rel="stylesheet" href="style.css?v=m3z1" />
 </head>
 <body>
 <canvas id="confetti-canvas"></canvas>
@@ -108,8 +108,17 @@
         </div>
       </div>
 
-      <!-- STEP 1 — WARM-UP (form W) · STEP 2 — PRACTICE A (form P) · STEP 3 — PRACTICE B (form A) · STEP 4 — REVIEW (form B) · STEP 5 — THE TEST (form T; Teacher-PIN retake = form U) -->
+      <!-- PRE-WARM-UP (form Z) · STEP 1 — WARM-UP (form W) · STEP 2 — PRACTICE A (form P) · STEP 3 — PRACTICE B (form A) · STEP 4 — REVIEW (form B) · STEP 5 — THE TEST (form T; Teacher-PIN retake = form U) -->
       <div id="form-select-section" class="hidden">
+
+        <!-- Pre-Warm-Up (Marcos 11/6) — shows after a finished Warm-Up (script.js preWarmUpShown); a Warm-Up below 9 waits for it once; locked once the Warm-Up is passed -->
+        <div class="step-card hidden" id="pre-warm-up-card">
+          <span class="step-label">Before the Warm-Up — Pre-Warm-Up</span>
+          <div class="start-grid">
+            <button class="start-btn pre-warm-up-btn" id="btn-form-Z" onclick="app.attemptStart('Z')">🧱 Pre-Warm-Up<span class="form-btn-sub">smaller steps · 8 questions · 💡 hints</span></button>
+          </div>
+          <p class="form-note">Smaller steps, with dots in groups. Finish the Pre-Warm-Up. Then try the Warm-Up again.</p>
+        </div>
 
         <!-- Warm-Up (Marcos 10/15) — watch a worked example (must hear it), then step by step, then 12 easier questions -->
         <div class="step-card" id="warm-up-card">
@@ -532,9 +541,10 @@
 <script src="form-label.js?v=1"></script>
 <!-- the Kokoro voice (Marcos 11/3: "Kokoro (recorded)"): every line the site can say, made ahead (site-tests mm3-kokoro.spec.js
      → kokoro-voice/make_lines.py); kokoro-voice.js plays them in place of the device voice. Before next-waits.js, which listens to it. -->
-<script src="kokoro/lines.js?v=34a5903d"></script>
+<script src="kokoro/lines.js?v=8a61ecc4"></script>
 <script src="kokoro-voice.js?v=1"></script>
 <script src="next-waits.js?v=1" data-hold='#next-btn, #lc-next'></script>
+<script src="data/form_z.js?v=m3z1"></script>
 <script src="data/form_w.js?v=m3f"></script>
 <script src="data/form_p.js?v=m3f"></script>
 <script src="data/form_a.js?v=m3f"></script>
@@ -544,9 +554,9 @@
 <script src="data/twin_x.js?v=m3f"></script>
 <script src="data/twin_y.js?v=m3f"></script>
 <script src="data/words.js?v=m3f"></script>
-<script src="data/skills.js?v=m3f"></script>
+<script src="data/skills.js?v=m3z1"></script>
 <script src="data/slides.js?v=m3f"></script>
-<script src="visuals.js?v=m3d"></script>
-<script src="script.js?v=m3g"></script>
+<script src="visuals.js?v=m3z1"></script>
+<script src="script.js?v=m3z1"></script>
 </body>
 </html>

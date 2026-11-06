@@ -135,6 +135,14 @@ window.SKILLS = {
  "Y14": "Pick the equation",
  "Y15": "Pick the equation",
  "Y16": "Pick the equation",
- "Y17": "Times as many: find the smaller amount"
+ "Y17": "Times as many: find the smaller amount",
+ "Z05": "Times as many: find the bigger amount",
+ "Z06": "Times as many: find the bigger amount",
+ "Z16": "Times as many: find the smaller amount",
+ "Z17": "Times as many: find the smaller amount",
+ "Z22": "Two steps: how many more",
+ "Z23": "Two steps: how many more",
+ "Z11": "Times as many: what each number means",
+ "Z12": "Times as many: what each number means"
 };
-window.SKILL_STANDARDS = {"Times as many: find the bigger amount":"4.OA.2","Pick the equation":"4.OA.2","Times as many: find the smaller amount":"4.OA.2","True or false: times as many":"4.OA.1","Two steps: how many more":"4.OA.3","How many times as many":"4.OA.2"};
+window.SKILL_STANDARDS = {"Times as many: find the bigger amount":"4.OA.2","Pick the equation":"4.OA.2","Times as many: find the smaller amount":"4.OA.2","True or false: times as many":"4.OA.1","Two steps: how many more":"4.OA.3","How many times as many":"4.OA.2","Times as many: what each number means":"4.OA.1"};
