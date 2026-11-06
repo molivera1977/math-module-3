@@ -996,3 +996,9 @@ h1 { font-weight: 800; letter-spacing: 0.3px; }
   .wp-art { margin: 0 auto; }
   .wp-step + .wp-step::before { display: none; }
 }
+
+/* At sign-in the parts wait while the sheet is asked for the student's work from other Chromebooks (11/6) */
+.loading-work-note { display: none; text-align: center; font-weight: 800; color: #1f3a8a; margin: 6px 0 10px; }
+#form-select-section.loading-work .loading-work-note { display: block; }
+#form-select-section.loading-work .start-btn { opacity: 0.5; pointer-events: none; }
+

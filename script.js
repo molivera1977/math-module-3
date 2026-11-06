@@ -559,6 +559,45 @@ function getFormAttempts(name) {
   return counts;
 }
 
+/* ── WORK FROM OTHER CHROMEBOOKS (Marcos 11/6: "do option 2") ──
+   This device remembers only the tries made on it, so a student who finished three parts on another Chromebook
+   was sent back to the Warm-Up. At sign-in the site asks the sheet for this ONE student's finished tries (the
+   sheet script's 'progress' read, a POST so the name is not in the address). For each part where the sheet has
+   more finished tries than this device, the missing ones are added here, best first — so every lock, the
+   Review's two tries and the Test's one try count them. No answer in 8 s, or no network: the site goes on with
+   this device's own record, as before. */
+const SHEET_WAIT_MS = 8000;
+function addSheetTries(name, games) {
+  const scores = JSON.parse(localStorage.getItem(SCORES_KEY) || '[]');
+  let added = 0;
+  FORMS.forEach(form => {
+    const tries = ((games || {})[gameKey(form)] || [])
+      .filter(t => Number(t.total) > 0)
+      .sort((a, b) => b.score / b.total - a.score / a.total);   // best first: the best score always comes over
+    const here = scores.filter(s => s.name === name && s.form === form && s.done).length;
+    tries.slice(0, Math.max(0, tries.length - here)).forEach((t, i) => {
+      const at = new Date(t.finishedAt), when = isNaN(at) ? new Date() : at;
+      scores.push({ name, form, attempt: here + i + 1, score: Number(t.score), total: Number(t.total),
+        pct: Math.round(t.score / t.total * 100), elapsed: 0, date: when.toLocaleDateString(),
+        time: when.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }), done: true, fromSheet: true });
+      added++;
+    });
+  });
+  if (added) localStorage.setItem(SCORES_KEY, JSON.stringify(scores));
+  return added;
+}
+function loadSheetProgress(name) {
+  if (SHARE_MODE || !name || /\(Guest\)$/.test(name)) return Promise.resolve(0);
+  const ctl = typeof AbortController === 'function' ? new AbortController() : null;
+  const timer = setTimeout(() => { if (ctl) ctl.abort(); }, SHEET_WAIT_MS);
+  return fetch(SHEET_URL, { method: 'POST', body: JSON.stringify({ action: 'progress', name, games: FORMS.map(gameKey) }), signal: ctl ? ctl.signal : undefined })
+    .then(r => r.json())
+    .then(d => (d && d.name === name ? addSheetTries(name, d.games) : 0))
+    .catch(() => 0)
+    .finally(() => clearTimeout(timer));
+}
+let sheetProgressToken = 0;
+
 /* The Test is one attempt. Once it is finished on this device the student sees
    "Test Already Completed"; a retake (form U) needs the Teacher PIN every
    time. The Review can be taken two times; after that only a Teacher PIN
@@ -1117,11 +1156,25 @@ const app = {
       retakeUnlocked = false;   // a PIN unlock never carries over to the next student
       applyFormLocks(displayName);
       this.checkResume();
+      this.waitForSheetWork(displayName);
     }
+  },
+
+  /* The parts wait a moment while the sheet is asked for this student's work from other Chromebooks */
+  waitForSheetWork(name) {
+    const section = document.getElementById('form-select-section');
+    const token = ++sheetProgressToken;
+    section.classList.add('loading-work');
+    loadSheetProgress(name).then(added => {
+      if (token !== sheetProgressToken) return;           // another student signed in meanwhile
+      section.classList.remove('loading-work');
+      if (added && loggedInName === name) applyFormLocks(name);
+    });
   },
 
   /* ── ATTEMPT START ── */
   attemptStart(form) {
+    if (document.getElementById('form-select-section').classList.contains('loading-work')) return;   // still looking for their work
     if (!this.studentName || !['Z', 'W', 'P', 'A', 'B', 'T'].includes(form) || !formOpen(form)) return;
     if (form === 'Z' && !preWarmUpShown(this.studentName)) return;
     // The test is one try — a finished one needs a Teacher-PIN retake
