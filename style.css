@@ -831,6 +831,19 @@ button.answer-btn.incorrect { background: #f8d7da; border-color: #dc3545; color:
 .m3-brk-lab { text-align: center; margin-top: 2px; font-size: 1.05rem; }
 .m3-brk-lab.m3-ans { color: var(--correct-dk); }
 .m3-legend { grid-column: 1 / -1; font-size: 0.85rem; color: #8a5a00; text-align: center; font-weight: 700; }
+/* Marcos's class words on the help parts (11/6): smaller number = the top box, larger number = the total for the
+   bottom bar, and the worked equation's factor 1 (groups) · factor 2 (in each group) · product (total) */
+.m3-tag { align-self: center; margin-left: 10px; font-size: 0.8rem; font-weight: 700; color: #6b4f00; background: #fff3cd; border: 1px solid #f0d68a; border-radius: 6px; padding: 1px 7px; white-space: nowrap; }
+.m3-tag-total { display: inline-block; margin: 4px 0 0; }
+.m3-groups .m3-tag-total { justify-self: start; }
+.m3-strip { display: flex; align-items: flex-start; gap: 6px; flex-wrap: wrap; justify-self: start; }
+.m3-f { display: flex; flex-direction: column; align-items: center; min-width: 3.6em; line-height: 1.15; }
+.m3-f b { font-size: 1.3rem; }
+.m3-f span { font-size: 0.72rem; font-weight: 700; color: #555; }
+.m3-f span:nth-of-type(1) { color: #1f3a8a; }
+.m3-f.m3-ans b { color: var(--correct-dk); }
+.m3-op { font-size: 1.3rem; padding-top: 1px; }
+@media (max-width: 480px) { .m3-tag { font-size: 0.72rem; margin-left: 6px; } .m3-f { min-width: 3em; } .m3-f span { font-size: 0.66rem; } }
 @media (max-width: 480px) { .m3-cell { font-size: 0.95rem; padding: 0 2px; } .m3-who { max-width: 5em; font-size: 0.85rem; } }
 /* Pre-Warm-Up: equal groups of dots (visuals.js groupsHTML, Marcos 11/6) */
 .m3-groups { display: grid !important; grid-template-columns: auto minmax(0, 1fr); gap: 10px 12px; align-items: center; font-weight: 800; }
@@ -950,6 +963,9 @@ body.slides-active .container > h1, body.slides-active .container > .welcome-sub
 .sl-pic .m3-who { font-size: 1.35rem; max-width: 9em; }
 .sl-pic .m3-brk-lab { font-size: 1.6rem; }
 .sl-pic .m3-legend { font-size: 1.1rem; }
+.sl-pic .m3-tag { font-size: 1.05rem; }
+.sl-pic .m3-f b { font-size: 1.7rem; }
+.sl-pic .m3-f span { font-size: 0.95rem; }
 
 /* ═══════════════════════════════════════════════════════
    WELCOME (Marcos 11/4: "these words seem too blah" · "It needs to look better visually"): a real bar model,
@@ -1001,4 +1017,3 @@ h1 { font-weight: 800; letter-spacing: 0.3px; }
 .loading-work-note { display: none; text-align: center; font-weight: 800; color: #1f3a8a; margin: 6px 0 10px; }
 #form-select-section.loading-work .loading-work-note { display: block; }
 #form-select-section.loading-work .start-btn { opacity: 0.5; pointer-events: none; }
-

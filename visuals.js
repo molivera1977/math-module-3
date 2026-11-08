@@ -188,13 +188,17 @@
                 'times'  → the bottom is ONE long bar with the total: drawing
                            t boxes would give the answer away
                 null     → worked: the bracket shows t × n in green
-       more   = shade boxes 2…t (the "how many more" part of a two-step problem) */
+       more   = shade boxes 2…t (the "how many more" part of a two-step problem)
+       label  = Marcos's class words (11/6), on the parts with help only: "smaller number" beside the top box,
+                "larger number · the total" under the bottom bar, and on a worked picture the equation
+                with factor 1 (groups) · factor 2 (in each group) · product (total) */
   function multHTML(cfg) {
     const t = cfg.t, num = typeof cfg.n === 'number';
     const cell = v => (typeof v === 'number' ? fmt(v) : esc(String(v)));
     const total = num ? t * cfg.n : cfg.total;
     const who = name => `<div class="m3-who${name ? '' : ' m3-who-empty'}" aria-hidden="true">${esc(name || '')}</div>`;   // no names: a plain number question
     const askCls = num ? '' : ' m3-ask';
+    const L = !!cfg.label;
     let bottom, brk, said;
     if (cfg.ask === 'times') {
       bottom = `<div class="m3-row"><div class="m3-cell m3-long">${cell(cfg.total)}</div></div>`;
@@ -209,10 +213,21 @@
       said = `Bar model. ${cfg.top ? `The top bar is ${cfg.top}: ` : 'The top bar is '}one group of ${cell(cfg.n)}. ${cfg.bottom ? `The bottom bar is ${cfg.bottom}: ` : 'The bottom bar is '}${t} groups of ${cell(cfg.n)}. ${cfg.bottom ? `The total for ${cfg.bottom}` : 'The total'} is ${cfg.ask === 'total' ? 'missing' : lab}.`;
     }
     const legend = cfg.more && cfg.ask == null ? `<div class="m3-legend" aria-hidden="true">The shaded groups are how many more.</div>` : '';
+    const strip = L && cfg.ask == null && num ? '<div></div>' + factorStrip(t, cfg.n) : '';
+    if (L) said += ' The smaller number is the top box. The larger number is the total for the bottom bar.' +
+      (strip ? ` Factor 1, ${t}, is the number of groups. Factor 2, ${cell(cfg.n)}, is the number in each group. The product, ${cell(total)}, is the total.` : '');
     return `<div class="m2-vis m3-mult" role="img" aria-label="${esc(said)}">` +
-      who(cfg.top) + `<div class="m3-row" aria-hidden="true"><div class="m3-cell${askCls}">${cell(cfg.n)}</div></div>` +
-      who(cfg.bottom) + `<div class="m3-botwrap" aria-hidden="true">${bottom}${brk}</div>` +
-      legend + `</div>`;
+      who(cfg.top) + `<div class="m3-row" aria-hidden="true"><div class="m3-cell${askCls}">${cell(cfg.n)}</div>${L ? '<span class="m3-tag">smaller number</span>' : ''}</div>` +
+      who(cfg.bottom) + `<div class="m3-botwrap" aria-hidden="true">${bottom}${brk}${L ? '<div class="m3-tag m3-tag-total">larger number · the total</div>' : ''}</div>` +
+      strip + legend + `</div>`;
+  }
+
+  /* t × n = P with Marcos's words under each number (11/6: "factor 1 being the number of groups, factor 2 being
+     the number in each group, and the product being the total") */
+  function factorStrip(t, n) {
+    const part = (v, a, b, cls) => `<div class="m3-f${cls ? ' ' + cls : ''}"><b>${fmt(v)}</b><span>${a}</span><span>${b}</span></div>`;
+    return `<div class="m3-strip" aria-hidden="true">${part(t, 'factor 1', 'groups')}<div class="m3-op">×</div>` +
+      `${part(n, 'factor 2', 'in each group')}<div class="m3-op">=</div>${part(t * n, 'product', 'total', 'm3-ans')}</div>`;
   }
 
   /* ── EQUAL GROUPS OF DOTS (Module 3 Pre-Warm-Up — Marcos 11/6) ──
@@ -223,7 +238,8 @@
                'share' → t × n loose dots on top, t empty groups below, each "?" (find the smaller amount)
                null    → worked: the groups and the equation in green
                          (share: true → only the t shared groups and the ÷ equation)
-       more  = shade groups 2…t (the "how many more" part of a two-step problem) */
+       more  = shade groups 2…t (the "how many more" part of a two-step problem)
+       label = Marcos's class words, like the bar model (not on a sharing picture: there the total is on top) */
   function groupsHTML(cfg) {
     const t = cfg.t, n = cfg.n, P = t * n;
     const dots = k => Array.from({ length: k }, () => '<span class="m3-dot"></span>').join('');
@@ -242,12 +258,18 @@
         '<div></div>' + lab(`${P} ÷ ${t} = ${n}`, true);
       said = `${P} dots shared into ${t} equal groups. Each group has ${n}.`;
     } else {
+      const L = !!cfg.label;
       const groupsBelow = Array.from({ length: t }, (_, i) => group(n, cfg.more && cfg.ask == null && i > 0 ? 'm3-more' : '')).join('');
-      body = who(cfg.top) + row(group(n)) +
+      const tag = text => `<span class="m3-tag">${text}</span>`;
+      const worked = '<div></div>' + (L ? factorStrip(t, n) : lab(`${t} × ${n} = ${P}`, true));
+      body = who(cfg.top) + row(group(n) + (L ? tag('smaller number') : '')) +
         who(cfg.bottom) + row(groupsBelow) +
-        '<div></div>' + (cfg.ask === 'total' ? lab('? in all') : lab(`${t} × ${n} = ${P}`, true));
+        (cfg.ask === 'total' ? '<div></div>' + lab('? in all') : '') +
+        (L ? '<div></div><div class="m3-tag m3-tag-total" aria-hidden="true">larger number · the total</div>' : '') +
+        (cfg.ask === 'total' ? '' : worked);   // the total named under the groups, then the worked equation (like the bar model)
       said = `${cfg.top ? cfg.top + ': ' : ''}one group of ${n} dots. ${cfg.bottom ? cfg.bottom + ': ' : ''}${t} groups of ${n} dots. ` +
-        (cfg.ask === 'total' ? 'How many in all is missing.' : `${t} times ${n} is ${P}.`);
+        (cfg.ask === 'total' ? 'How many in all is missing.' : `${t} times ${n} is ${P}.`) +
+        (L ? ' The smaller number is the top group. The larger number is the total for the bottom row.' : '');
     }
     const legend = cfg.more && cfg.ask == null ? `<div class="m3-legend" aria-hidden="true">The shaded groups are how many more.</div>` : '';
     return `<div class="m2-vis m3-groups" role="img" aria-label="${esc(said)}">${body}${legend}</div>`;
