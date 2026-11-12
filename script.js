@@ -103,7 +103,7 @@ const wordHelp = form => form === 'Z' || form === 'W' || form === 'P' || form ==
 const TWINS = { A: 'X', B: 'Y' };
 const FORM_NAMES = { Z: 'Pre-Warm-Up', W: 'Warm-Up', P: 'Practice A', A: 'Practice B', B: 'Review', T: 'Test', U: 'Test (Retake)' };
 function formOpen(form) {
-  return SHARE_MODE || (isWarmUp(form) ? WARM_UP_OPEN : isPractice(form) ? PRACTICE_A_OPEN : form === 'A' ? PRACTICE_B_OPEN : form === 'B' ? REVIEW_OPEN : TEST_OPEN);
+  return SHARE_MODE || (isWarmUp(form) ? WARM_UP_OPEN : isPractice(form) ? PRACTICE_A_OPEN : form === 'A' ? PRACTICE_B_OPEN : form === 'B' ? REVIEW_OPEN : TEST_OPEN && atSchoolNow());
 }
 const ANY_OPEN = WARM_UP_OPEN || PRACTICE_A_OPEN || PRACTICE_B_OPEN || REVIEW_OPEN || TEST_OPEN;
 /* Sheet / dashboard game key — one per form */
@@ -686,7 +686,7 @@ function setFormButton(form, label, sub, waiting) {
   // "waiting" = open but not yet earned: looks locked, still tappable so it can explain why
   btn.classList.toggle('locked', !open || !!waiting);
   btn.innerHTML = !open
-    ? `🔒 ${label.replace(/^\S+\s/, '')}<span class="form-btn-sub">Not open yet</span>`
+    ? `🔒 ${label.replace(/^\S+\s/, '')}<span class="form-btn-sub">${schoolOnly(form) ? 'At school only' : 'Not open yet'}</span>`
     : waiting
       ? `🔒 ${label.replace(/^\S+\s/, '')}<span class="form-btn-sub">${waiting}</span>`
       : `${label}<span class="form-btn-sub">${sub}</span>`;
@@ -1564,6 +1564,7 @@ const app = {
       const data = JSON.parse(saved);
       if (this.studentName && data.studentName === this.studentName) {
         rc.classList.remove('hidden');
+        markSchoolResume();   // a test outside the school day: Resume shut
         document.getElementById('resume-detail').textContent =
           `${FORM_NAMES[data.currentForm] || 'Test'} — Q${data.currentIndex + 1} of ${data.currentBank.length}`;
         if (formSelect) formSelect.classList.add('hidden');
@@ -1580,6 +1581,7 @@ const app = {
   resumeSession() {
     const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
     if (!saved) return;
+    if (schoolOnly(saved.currentForm)) { markSchoolResume(); return; }   // a test started at school is finished at school
     this.studentName    = saved.studentName;
     this.currentForm    = saved.currentForm;
     this.currentBank    = saved.currentBank;
@@ -2712,3 +2714,39 @@ if (window.SpotSync) SpotSync.init({
   skip: () => SHARE_MODE || reviewMode,
   usable: s => Array.isArray(s.currentBank) && s.currentBank.length > 0
 });
+
+/* ── TESTS ARE TAKEN AT SCHOOL (Marcos 11/12/2026: "allow the kids to do the reviews only and make all of those [tests]
+   off limits" at home → "I like your time idea") ──
+   school-clock.js (the same file on every test site) says whether it is the school day: Monday–Friday, 8:40 AM–3:10 PM
+   (12:50 PM on early-dismissal days), by the clock of the site's own address, not the computer's. Outside it
+   the Test (and its retake) is shut — its button reads "At school only" — and a test started at school waits for the
+   next school day (its Resume button is shut, with a note). The Warm-Up, Practice and the Review stay open at home. A
+   test already on the screen at 3:10 goes on. The guest view (?share=), Try it and Teacher Access are never shut. */
+const SCHOOL_NOTE = 'You finish the test at school. It opens on school days from 8:40 to 3:10.';
+function atSchoolNow() { return !window.SchoolClock || SchoolClock.atSchool(); }
+function schoolOnly(form) { return !SHARE_MODE && isTest(form) && TEST_OPEN && !atSchoolNow(); }
+// The "Welcome back" box: a saved TEST outside the school day — Resume shut, a note under it
+function markSchoolResume() {
+  const rc = document.getElementById('resume-container');
+  const btn = rc && rc.querySelector('.resume-btn');
+  if (!btn) return;
+  let data = null;
+  try { data = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null'); } catch (e) { data = null; }
+  const shut = !!data && !rc.classList.contains('hidden') && schoolOnly(data.currentForm);
+  btn.disabled = shut;
+  btn.classList.toggle('locked', shut);
+  let note = document.getElementById('resume-school-note');
+  if (shut && !note) {
+    note = document.createElement('p');
+    note.id = 'resume-school-note';
+    note.className = 'locked-note';
+    note.textContent = '🏫 ' + SCHOOL_NOTE;
+    btn.insertAdjacentElement('afterend', note);
+  } else if (!shut && note) note.remove();
+}
+function applySchoolLock() {
+  if (loggedInName && !SHARE_MODE) applyFormLocks(loggedInName);
+  markSchoolResume();
+}
+if (window.SchoolClock) SchoolClock.whenKnown(applySchoolLock);
+setInterval(applySchoolLock, 30000);
