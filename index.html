@@ -47,7 +47,7 @@
         <li class="wp-step wp-s4"><span class="wp-n">4</span><span aria-hidden="true">📘</span> Review</li>
         <li class="wp-step wp-s5"><span class="wp-n">5</span><span aria-hidden="true">📝</span> Test</li>
       </ol>
-      <button class="lgs-btn" data-guest-start onclick="app.showReadAloudIntro()">🚀 Let's Get Started!</button>
+      <button class="lgs-btn" data-guest-key="Every question, the right answer and why. Printable." data-guest-start onclick="app.showReadAloudIntro()">🚀 Let's Get Started!</button>
       <div style="text-align:right;margin-top:10px;">
         <span onclick="app.promptTeacherReview()" style="font-size:12px;color:#767676;cursor:pointer;user-select:none;">Teacher Access</span>
       </div>
@@ -538,7 +538,7 @@
   <button type="button" id="teach-back" onclick="app.backToTeacher()">← Teacher screen</button>
 </div>
 
-<script src="share.js?v=5"></script>
+<script src="share.js?v=6"></script>
 <script src="form-label.js?v=1"></script>
 <!-- the Kokoro voice (Marcos 11/3: "Kokoro (recorded)"): every line the site can say, made ahead (site-tests mm3-kokoro.spec.js
      → kokoro-voice/make_lines.py); kokoro-voice.js plays them in place of the device voice. Before next-waits.js, which listens to it. -->
